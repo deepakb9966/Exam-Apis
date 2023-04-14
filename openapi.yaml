@@ -1,0 +1,226 @@
+openapi: 3.0.0
+info:
+  title: Quiz OpenAPI
+  description: Quiz Service
+  version: 0.0.1
+servers:
+  - url: http://localhost:8082/
+    description: Local Dev Server
+paths:
+  /Exam/topics:
+    get:
+      tags:
+        - Quiz
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/topicsresults"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+  /Exam/topic/:
+    get:
+      tags:
+        - Quiz
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/quetionsresponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/ResourceNotFoundError"
+        "422":
+          $ref: "#/components/responses/UnAcceptableInputs"
+  # /Appointments/create:
+  #   post:
+  #     tags:
+  #       - Appointments
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/AppointmentDto"
+  #     responses:
+  #       "201":
+  #         description: Success
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/AppointmentDto"
+  #       "401":
+  #         $ref: "#/components/responses/UnauthorizedError"
+  #       "404":
+  #         $ref: "#/components/responses/ResourceNotFoundError"
+  #       "422":
+  #         $ref: "#/components/responses/UnAcceptableInputs"
+  # /Appointments/update:
+  #   put:
+  #     tags:
+  #       - Appointments
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/AppointmentDto"
+  #     responses:
+  #       "200":
+  #         description: Success
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/AppointmentDto"
+  #       "401":
+  #         $ref: "#/components/responses/UnauthorizedError"
+  #       "404":
+  #         $ref: "#/components/responses/ResourceNotFoundError"
+  #       "422":
+  #         $ref: "#/components/responses/UnAcceptableInputs"
+  # /Appointments/delete:
+  #   delete:
+  #     tags:
+  #       - Appointments
+  #     parameters:
+  #       - $ref: "#/components/parameters/patientIdParam"
+  #       - $ref: "#/components/parameters/idParam"
+  #     responses:
+  #       "200":
+  #         $ref: "#/components/responses/Success"
+  #       "401":
+  #         $ref: "#/components/responses/UnauthorizedError"
+  #       "404":
+  #         $ref: "#/components/responses/ResourceNotFoundError"
+  #       "422":
+  #         $ref: "#/components/responses/UnAcceptableInputs"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    patientIdParam:
+      name: patientId
+      in: query
+      required: true
+      schema:
+        type: string
+    idParam:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: string
+    limitParam:
+      name: Limit
+      in: query
+      schema:
+        type: integer
+        nullable: true
+    directionParam:
+      name: Direction
+      in: query
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+    sortByFieldParam:
+      name: SortByField
+      in: query
+      schema:
+        type: string
+        nullable: true
+  responses:
+    Success:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              patientId:
+                type: string
+              slotId:
+                type: string
+              message:
+                type: string
+           
+    ResourceNotFoundError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+    UnAcceptableInputs:
+      description: Invalid Inputs
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageDto"
+  schemas:
+    MessageDto:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    topicsresults:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/topics"
+    quetionsresponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/quetions"
+    quetions:
+      type: object
+      properties:
+        quetion:
+          type: string
+        options:
+          type: object
+          properties:
+            0:
+              type: string
+            1:
+              type: string
+            2:
+              type: string
+            3:
+              type: string
+        answer:
+          type: number
+        id:
+          type: string
+    topics:
+        type: object
+        properties:
+          id:
+            type: string
+          topic:
+            type: string
